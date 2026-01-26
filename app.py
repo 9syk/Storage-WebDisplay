@@ -5,6 +5,7 @@ import logging
 from pathlib import Path
 
 from flask import Flask, render_template
+from flask import request, redirect, url_for, jsonify
 
 try:
     from mcrcon import MCRcon
@@ -63,11 +64,17 @@ def fetch_storage_for_score(score_key: str):
     password = rconf.get("password", "")
     cmd = f"data get storage syk9lib: scoretostorage.result.{score_key}"
     try:
-        with MCRcon(host, password, port) as m:
-            try:
-                resp = m.command(cmd)
-            except AttributeError:
-                resp = m.sendCommand(cmd)
+        try:
+            with MCRcon(host, password, port) as m:
+                try:
+                    resp = m.command(cmd)
+                except AttributeError:
+                    resp = m.sendCommand(cmd)
+        except SystemExit:
+            # Some mcrcon implementations call sys.exit() on connect failure;
+            # SystemExit is not a subclass of Exception, so catch it explicitly
+            logging.error("mcrcon raised SystemExit (likely connection failure) for %s:%s", host, port)
+            return []
     except Exception:
         logging.exception("Failed mcrcon for score %s", score_key)
         return []
@@ -101,6 +108,20 @@ def get_rankings():
 def index():
     rankings = get_rankings()
     return render_template("index.html", rankings=rankings)
+
+
+@app.route("/refresh", methods=["POST"])
+def refresh():
+    # Trigger fresh fetch via get_rankings and render same template.
+    rankings = get_rankings()
+    return render_template("index.html", rankings=rankings)
+
+
+@app.route('/api/refresh')
+def api_refresh():
+    # Return JSON of latest rankings for AJAX clients
+    rankings = get_rankings()
+    return jsonify({'rankings': rankings})
 
 
 if __name__ == "__main__":
