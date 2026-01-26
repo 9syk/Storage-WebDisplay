@@ -19,27 +19,31 @@
     header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
     header .title{display:flex;flex-direction:column}
     h1{margin:0;font-size:20px;font-weight:700}
-    .subtitle{color:var(--muted);font-size:13px}
+    /* subtitle removed per preference */
+    .subtitle{display:none}
 
     .controls{display:flex;align-items:center;gap:10px}
     button{font-weight:600;border-radius:8px;border:0;padding:8px 12px;cursor:pointer}
-    #refreshBtn{background:linear-gradient(180deg,var(--accent),#1e40af);color:#fff;box-shadow:0 6px 12px rgba(37,99,235,0.12)}
+    /* remove heavy shadow to avoid cheap look */
+    #refreshBtn{background:linear-gradient(180deg,var(--accent),#1e40af);color:#fff;border:0}
+    #refreshBtn:hover{filter:brightness(1.04)}
     #refreshBtn:active{transform:translateY(1px)}
     #status{color:var(--muted);font-size:13px}
     #countdown{color:var(--muted);font-size:13px}
 
     .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:var(--shadow);}
 
-    .tabs{display:flex;gap:8px;margin:12px 0 18px;flex-wrap:wrap}
+    .tabs{display:flex;gap:8px;margin:18px 0 20px;flex-wrap:wrap}
     .tab-btn{background:transparent;border:1px solid transparent;padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
     .tab-btn.active{background:linear-gradient(90deg, rgba(37,99,235,0.08), rgba(6,182,212,0.04));color:var(--accent);box-shadow:inset 0 -2px 0 rgba(37,99,235,0.08)}
 
-    .tab-panel{display:none}
+    .tab-panel{display:none;padding-top:8px}
     .tab-panel.active{display:block}
-    .tab-panel h2{margin-top:0;font-size:16px}
+    .tab-panel h2{margin-top:12px;font-size:16px}
     ol{padding-left:18px;margin:8px 0}
-    li{padding:6px 10px;border-radius:8px;margin-bottom:6px;background:linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0.01));display:flex;justify-content:space-between}
-    li small{color:var(--muted)}
+    li{padding:8px 12px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0.01));display:flex;justify-content:space-between;align-items:center}
+    .player{font-weight:600;color:#0f172a}
+    .score{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;color:var(--accent)}
 
     @media (max-width:600px){
       body{padding:14px}
@@ -76,7 +80,7 @@
         <h2>{{ title }}</h2>
         <ol>
           {% for it in items %}
-            <li>{{ it.player }}: {{ it.value }}</li>
+            <li><span class="player">{{ it.player }}</span><span class="score">{{ it.value }}</span></li>
           {% endfor %}
         </ol>
       </div>
@@ -121,7 +125,14 @@
         ol.innerHTML = '';
         for(const it of items){
           const li = document.createElement('li');
-          li.textContent = `${it.player}: ${it.value}`;
+          const p = document.createElement('span');
+          p.className = 'player';
+          p.textContent = it.player;
+          const s = document.createElement('span');
+          s.className = 'score';
+          s.textContent = it.value;
+          li.appendChild(p);
+          li.appendChild(s);
           ol.appendChild(li);
         }
       }
