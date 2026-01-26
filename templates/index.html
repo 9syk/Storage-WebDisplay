@@ -30,6 +30,7 @@
     #refreshBtn:active{transform:translateY(1px)}
     #status{color:var(--muted);font-size:13px}
     #countdown{color:var(--muted);font-size:13px}
+    .countdown-row{margin-top:8px}
 
     .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:var(--shadow);}
 
@@ -43,8 +44,16 @@
     ol{padding-left:18px;margin:8px 0}
     li{padding:8px 12px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0.01));display:flex;justify-content:space-between;align-items:center}
     .player{font-weight:600;color:#0f172a;margin-left:8px}
-    .score{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:800;color:var(--accent);font-size:1.05rem}
-    .rank{color:var(--muted);font-weight:700;width:28px;display:inline-block;text-align:right;margin-right:8px}
+    /* layout: split area so player is left, score sits nearer center on right column */
+    li{display:flex;align-items:center;justify-content:space-between}
+    li .left{display:flex;align-items:center;flex:1;min-width:0}
+    .rank{color:var(--muted);font-weight:700;width:36px;display:inline-block;text-align:right;margin-right:10px}
+    .score-wrap{flex:0 0 240px;text-align:left}
+    .score{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:900;color:var(--accent);font-size:1.15rem}
+    /* medal colors for top 3 */
+    .tab-panel ol li:nth-child(1) .rank{color:#d4af37}
+    .tab-panel ol li:nth-child(2) .rank{color:#c0c0c0}
+    .tab-panel ol li:nth-child(3) .rank{color:#b87333}
 
     @media (max-width:600px){
       body{padding:14px}
@@ -61,8 +70,10 @@
         <div class="subtitle">リアルタイムランキング（RCON経由）</div>
       </div>
       <div class="controls">
-        <button id="refreshBtn">更新</button>
         <span id="status"></span>
+        <button id="refreshBtn">更新</button>
+      </div>
+      <div class="countdown-row">
         <span id="countdown"></span>
       </div>
     </header>
@@ -81,7 +92,10 @@
         <h2>{{ title }}</h2>
         <ol>
           {% for it in items %}
-            <li><span class="rank">{{ loop.index }}.</span><span class="player">{{ it.player }}</span><span class="score">{{ it.value }}</span></li>
+            <li>
+              <div class="left"><span class="rank">{{ loop.index }}.</span><span class="player">{{ it.player }}</span></div>
+              <div class="score-wrap"><span class="score">{{ it.value }}</span></div>
+            </li>
           {% endfor %}
         </ol>
       </div>
@@ -126,18 +140,24 @@
         ol.innerHTML = '';
         items.forEach((it, idx) => {
           const li = document.createElement('li');
+          const left = document.createElement('div');
+          left.className = 'left';
           const r = document.createElement('span');
           r.className = 'rank';
           r.textContent = (idx + 1) + '.';
           const p = document.createElement('span');
           p.className = 'player';
           p.textContent = it.player;
+          left.appendChild(r);
+          left.appendChild(p);
+          const right = document.createElement('div');
+          right.className = 'score-wrap';
           const s = document.createElement('span');
           s.className = 'score';
           s.textContent = it.value;
-          li.appendChild(r);
-          li.appendChild(p);
-          li.appendChild(s);
+          right.appendChild(s);
+          li.appendChild(left);
+          li.appendChild(right);
           ol.appendChild(li);
         });
       }
