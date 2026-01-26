@@ -23,6 +23,7 @@
     .subtitle{display:none}
 
     .controls{display:flex;align-items:center;gap:10px}
+    .right{display:flex;flex-direction:column;align-items:flex-end}
     button{font-weight:600;border-radius:8px;border:0;padding:8px 12px;cursor:pointer}
     /* remove heavy shadow to avoid cheap look */
     #refreshBtn{background:linear-gradient(180deg,var(--accent),#1e40af);color:#fff;border:0}
@@ -48,7 +49,7 @@
     li{display:flex;align-items:center;justify-content:space-between}
     li .left{display:flex;align-items:center;flex:1;min-width:0}
     .rank{color:var(--muted);font-weight:700;width:36px;display:inline-block;text-align:right;margin-right:10px}
-    .score-wrap{flex:0 0 240px;text-align:left}
+    .score-wrap{flex:0 0 240px;text-align:left;border-left:1px solid rgba(15,23,42,0.06);padding-left:14px;margin-left:12px}
     .score{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:900;color:var(--accent);font-size:1.15rem}
     /* medal colors for top 3 */
     .tab-panel ol li:nth-child(1) .rank{color:#d4af37}
@@ -59,6 +60,7 @@
       body{padding:14px}
       header{flex-direction:column;align-items:stretch}
       .controls{justify-content:flex-start}
+      .right{align-items:flex-start}
     }
   </style>
   </head>
@@ -69,12 +71,14 @@
         <h1>{{ page_title }}</h1>
         <div class="subtitle">リアルタイムランキング（RCON経由）</div>
       </div>
-      <div class="controls">
-        <span id="status"></span>
-        <button id="refreshBtn">更新</button>
-      </div>
-      <div class="countdown-row">
-        <span id="countdown"></span>
+      <div class="right">
+        <div class="controls">
+          <span id="status"></span>
+          <button id="refreshBtn">更新</button>
+        </div>
+        <div class="countdown-row">
+          <span id="countdown"></span>
+        </div>
       </div>
     </header>
 
