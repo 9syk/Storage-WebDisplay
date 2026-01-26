@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>Score Rankings</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:24px}
+    h2{margin-top:28px}
+  </style>
+</head>
+<body>
+  <h1>Score Rankings</h1>
+  {% for title, items in rankings.items() %}
+    <h2>{{ title }}</h2>
+    <ol>
+      {% for it in items %}
+        <li>{{ it.player }}: {{ it.value }} <small>({{ it.storage }})</small></li>
+      {% endfor %}
+    </ol>
+  {% endfor %}
+</body>
+</html>
