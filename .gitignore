@@ -1,0 +1,9 @@
+# Ignore local configuration (users should copy sample_config.yaml -> config.yaml)
+config.yaml
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment files
+.env
