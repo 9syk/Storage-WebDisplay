@@ -196,7 +196,6 @@
           if (!res.ok) throw new Error('network');
           const j = await res.json();
           renderRankings(j.rankings);
-          // reset countdown after auto refresh
           remaining = REFRESH_RATE;
           updateCountdownDisplay();
         } catch (e) {

@@ -27,13 +27,6 @@ app = Flask(__name__)
 
 
 def parse_storage_output(text: str):
-    """Parse Minecraft storage output into a Python list of dicts.
-
-    The storage is expected to be like:
-    [{steve:100,alex:150,notch:200},{steve:120,alex:330,notch:150}]
-    which is not valid JSON (unquoted keys). This function quotes keys
-    and loads JSON.
-    """
     if not text:
         return []
     m = re.search(r"(\[.*\])", text, re.S)
@@ -49,12 +42,6 @@ def parse_storage_output(text: str):
 
 
 def fetch_storage_for_score(score_key: str):
-    """Call mcrcon to fetch the storage array for a given score key.
-
-    Uses the fixed namespace `syk9lib:` and the path
-    `scoretostorage.result.<score>` separated by a space as requested:
-    `data get storage syk9lib: scoretostorage.result.<score>`
-    """
     if MCRcon is None:
         logging.error("mcrcon library not available. Install via requirements.txt")
         return []
@@ -71,8 +58,6 @@ def fetch_storage_for_score(score_key: str):
                 except AttributeError:
                     resp = m.sendCommand(cmd)
         except SystemExit:
-            # Some mcrcon implementations call sys.exit() on connect failure;
-            # SystemExit is not a subclass of Exception, so catch it explicitly
             logging.error("mcrcon raised SystemExit (likely connection failure) for %s:%s", host, port)
             return []
     except Exception:
@@ -114,7 +99,6 @@ def index():
 
 @app.route("/refresh", methods=["POST"])
 def refresh():
-    # Trigger fresh fetch via get_rankings and render same template.
     rankings = get_rankings()
     refresh_rate = config.get("refresh_rate", 0)
     page_title = config.get("page_title", "Score Rankings")
@@ -123,7 +107,6 @@ def refresh():
 
 @app.route('/api/refresh')
 def api_refresh():
-    # Return JSON of latest rankings for AJAX clients
     rankings = get_rankings()
     return jsonify({'rankings': rankings})
 

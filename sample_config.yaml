@@ -3,10 +3,9 @@ rcon:
   port: 25575
   password: "change_me"
 
-# Auto-refresh interval in seconds. Set to 0 to disable automatic refresh.
+# 自動更新のインターバル[秒]、0にすると無効
 refresh_rate: 30
 
-# Page title shown at the top of the web UI
 page_title: "Score Rankings"
 
 scores:
