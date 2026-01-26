@@ -19,13 +19,10 @@
     header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
     header .title{display:flex;flex-direction:column}
     h1{margin:0;font-size:20px;font-weight:700}
-    /* subtitle removed per preference */
-    .subtitle{display:none}
 
     .controls{display:flex;align-items:center;gap:10px}
     .right{display:flex;flex-direction:column;align-items:flex-end}
     button{font-weight:600;border-radius:8px;border:0;padding:8px 12px;cursor:pointer}
-    /* remove heavy shadow to avoid cheap look */
     #refreshBtn{background:linear-gradient(180deg,var(--accent),#1e40af);color:#fff;border:0}
     #refreshBtn:hover{filter:brightness(1.04)}
     #refreshBtn:active{transform:translateY(1px)}
@@ -50,7 +47,6 @@
     .rank{color:#374151;font-weight:700;width:36px;display:inline-block;text-align:right;margin-right:10px}
     .score-wrap{flex:0 0 240px;text-align:left;border-left:1px solid rgba(15,23,42,0.12);padding-left:14px;margin-left:12px}
     .score{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:900;color:var(--accent);font-size:1.15rem}
-    /* medal colors for top 3 */
     .tab-panel ol li:nth-child(1) .rank{color:#f5c424}
     .tab-panel ol li:nth-child(2) .rank{color:#9e9e9e}
     .tab-panel ol li:nth-child(3) .rank{color:#9e642e}
@@ -69,7 +65,6 @@
     <header>
       <div class="title">
         <h1>{{ page_title }}</h1>
-        <div class="subtitle">リアルタイムランキング（RCON経由）</div>
       </div>
       <div class="right">
         <div class="controls">
@@ -108,7 +103,6 @@
   </div>
 
   <script>
-    // Tab switching
     function activateTab(index){
       document.querySelectorAll('.tab-panel').forEach((p, i)=>{
         p.classList.toggle('active', String(i)===String(index));
@@ -133,7 +127,6 @@
       el.textContent = `次の自動更新まで: ${remaining}s`;
     }
     async function renderRankings(obj){
-      // Update each tab-panel content by matching panel's data-title to ranking title
       const panels = Array.from(document.querySelectorAll('.tab-panel'));
       for(const title in obj){
         const items = obj[title];
@@ -176,7 +169,6 @@
         const j = await res.json();
         renderRankings(j.rankings);
         status.textContent = '更新完了';
-        // reset countdown after manual refresh
         remaining = REFRESH_RATE;
         updateCountdownDisplay();
         setTimeout(()=>status.textContent='', 2000);
@@ -186,13 +178,11 @@
       }
     });
 
-    // Auto-refresh if enabled (>0 seconds)
     if (REFRESH_RATE && REFRESH_RATE > 0) {
       // initial display
       remaining = REFRESH_RATE;
       updateCountdownDisplay();
 
-      // countdown timer: update every 1s
       setInterval(() => {
         if (remaining > 0) {
           remaining -= 1;
@@ -200,7 +190,6 @@
         updateCountdownDisplay();
       }, 1000);
 
-      // auto fetch interval
       setInterval(async () => {
         try {
           const res = await fetch('/api/refresh');
@@ -215,7 +204,6 @@
         }
       }, REFRESH_RATE * 1000);
     } else {
-      // ensure countdown hidden when disabled
       remaining = 0;
       updateCountdownDisplay();
     }
