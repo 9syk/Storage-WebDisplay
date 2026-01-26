@@ -27,6 +27,7 @@
   </div>
 
   <script>
+    const REFRESH_RATE = {{ refresh_rate | default(0) | tojson }};
     async function renderRankings(obj){
       const container = document.getElementById('rankings');
       container.innerHTML = '';
@@ -59,6 +60,20 @@
         console.error(e);
       }
     });
+
+    // Auto-refresh if enabled (>0 seconds)
+    if (REFRESH_RATE && REFRESH_RATE > 0) {
+      setInterval(async () => {
+        try {
+          const res = await fetch('/api/refresh');
+          if (!res.ok) throw new Error('network');
+          const j = await res.json();
+          renderRankings(j.rankings);
+        } catch (e) {
+          console.error('Auto-refresh failed', e);
+        }
+      }, REFRESH_RATE * 1000);
+    }
   </script>
 </body>
 </html>

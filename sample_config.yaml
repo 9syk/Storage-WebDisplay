@@ -2,8 +2,12 @@ rcon:
   host: "127.0.0.1"
   port: 25575
   password: "change_me"
+
+# Auto-refresh interval in seconds. Set to 0 to disable automatic refresh.
+refresh_rate: 30
+
 scores:
   - key: kill
-    title: "～KILL RANKING～"
+    title: "KILL RANKING"
   - key: damage
-    title: "～DAMAGE RANKING～"
+    title: "DAMAGE RANKING"
