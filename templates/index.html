@@ -6,6 +6,11 @@
   <style>
     body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:24px}
     h2{margin-top:28px}
+    .tabs{display:flex;gap:6px;margin-bottom:8px}
+    .tab-btn{background:#eee;border:1px solid #ddd;padding:6px 10px;cursor:pointer}
+    .tab-btn.active{background:#fff;border-bottom:2px solid #0078d4}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
   </style>
 </head>
 <body>
@@ -17,17 +22,39 @@
   </div>
 
   <div id="rankings">
-  {% for title, items in rankings.items() %}
-    <h2>{{ title }}</h2>
-    <ol>
-      {% for it in items %}
-        <li>{{ it.player }}: {{ it.value }}</li>
-      {% endfor %}
-    </ol>
-  {% endfor %}
+  <div class="tabs">
+    {% for title, items in rankings.items() %}
+      <button class="tab-btn" data-target="tab-{{ loop.index0 }}">{{ title }}</button>
+    {% endfor %}
+  </div>
+
+  <div class="tab-contents">
+    {% for title, items in rankings.items() %}
+      <div id="tab-{{ loop.index0 }}" class="tab-panel{% if loop.first %} active{% endif %}" data-title="{{ title }}">
+        <h2>{{ title }}</h2>
+        <ol>
+          {% for it in items %}
+            <li>{{ it.player }}: {{ it.value }}</li>
+          {% endfor %}
+        </ol>
+      </div>
+    {% endfor %}
+  </div>
   </div>
 
   <script>
+    // Tab switching
+    function activateTab(index){
+      document.querySelectorAll('.tab-panel').forEach((p, i)=>{
+        p.classList.toggle('active', String(i)===String(index));
+      });
+      document.querySelectorAll('.tab-btn').forEach((b, i)=>{
+        b.classList.toggle('active', String(i)===String(index));
+      });
+    }
+    document.querySelectorAll('.tab-btn').forEach((btn, i)=>{
+      btn.addEventListener('click', ()=> activateTab(i));
+    });
     const REFRESH_RATE = {{ refresh_rate | default(0) | tojson }};
     let remaining = REFRESH_RATE;
 
@@ -41,19 +68,23 @@
       el.textContent = `次の自動更新まで: ${remaining}s`;
     }
     async function renderRankings(obj){
-      const container = document.getElementById('rankings');
-      container.innerHTML = '';
+      // Update each tab-panel content by matching titles order
+      const panels = document.querySelectorAll('.tab-panel');
+      let i = 0;
       for(const title in obj){
-        const h = document.createElement('h2');
-        h.textContent = title;
-        container.appendChild(h);
-        const ol = document.createElement('ol');
-        for(const it of obj[title]){
+        const items = obj[title];
+        const panel = panels[i];
+        if(!panel) { i++; continue; }
+        // update the list inside panel
+        const ol = panel.querySelector('ol');
+        if(!ol) { i++; continue; }
+        ol.innerHTML = '';
+        for(const it of items){
           const li = document.createElement('li');
           li.textContent = `${it.player}: ${it.value}`;
           ol.appendChild(li);
         }
-        container.appendChild(ol);
+        i++;
       }
     }
 
