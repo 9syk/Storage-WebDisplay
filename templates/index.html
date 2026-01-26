@@ -13,6 +13,7 @@
   <div style="margin-bottom:12px">
     <button id="refreshBtn">更新</button>
     <span id="status" style="margin-left:8px;color:#666"></span>
+    <span id="countdown" style="margin-left:12px;color:#444"></span>
   </div>
 
   <div id="rankings">
@@ -28,6 +29,17 @@
 
   <script>
     const REFRESH_RATE = {{ refresh_rate | default(0) | tojson }};
+    let remaining = REFRESH_RATE;
+
+    function updateCountdownDisplay(){
+      const el = document.getElementById('countdown');
+      if(!el) return;
+      if(!REFRESH_RATE || REFRESH_RATE <= 0){
+        el.textContent = '';
+        return;
+      }
+      el.textContent = `次の自動更新まで: ${remaining}s`;
+    }
     async function renderRankings(obj){
       const container = document.getElementById('rankings');
       container.innerHTML = '';
@@ -54,6 +66,9 @@
         const j = await res.json();
         renderRankings(j.rankings);
         status.textContent = '更新完了';
+        // reset countdown after manual refresh
+        remaining = REFRESH_RATE;
+        updateCountdownDisplay();
         setTimeout(()=>status.textContent='', 2000);
       }catch(e){
         status.textContent = '更新失敗';
@@ -63,16 +78,36 @@
 
     // Auto-refresh if enabled (>0 seconds)
     if (REFRESH_RATE && REFRESH_RATE > 0) {
+      // initial display
+      remaining = REFRESH_RATE;
+      updateCountdownDisplay();
+
+      // countdown timer: update every 1s
+      setInterval(() => {
+        if (remaining > 0) {
+          remaining -= 1;
+        }
+        updateCountdownDisplay();
+      }, 1000);
+
+      // auto fetch interval
       setInterval(async () => {
         try {
           const res = await fetch('/api/refresh');
           if (!res.ok) throw new Error('network');
           const j = await res.json();
           renderRankings(j.rankings);
+          // reset countdown after auto refresh
+          remaining = REFRESH_RATE;
+          updateCountdownDisplay();
         } catch (e) {
           console.error('Auto-refresh failed', e);
         }
       }, REFRESH_RATE * 1000);
+    } else {
+      // ensure countdown hidden when disabled
+      remaining = 0;
+      updateCountdownDisplay();
     }
   </script>
 </body>
