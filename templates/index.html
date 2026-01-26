@@ -43,18 +43,18 @@
     .tab-panel.active{display:block}
     .tab-panel h2{margin-top:12px;font-size:16px}
     ol{padding-left:18px;margin:8px 0}
-    li{padding:8px 12px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0.01));display:flex;justify-content:space-between;align-items:center}
+    li{padding:8px 12px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(15,23,42,0.04), rgba(15,23,42,0.02));display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(15,23,42,0.03)}
     .player{font-weight:600;color:#0f172a;margin-left:8px}
-    /* layout: split area so player is left, score sits nearer center on right column */
     li{display:flex;align-items:center;justify-content:space-between}
     li .left{display:flex;align-items:center;flex:1;min-width:0}
-    .rank{color:var(--muted);font-weight:700;width:36px;display:inline-block;text-align:right;margin-right:10px}
-    .score-wrap{flex:0 0 240px;text-align:left;border-left:1px solid rgba(15,23,42,0.06);padding-left:14px;margin-left:12px}
+    .rank{color:#374151;font-weight:700;width:36px;display:inline-block;text-align:right;margin-right:10px}
+    .score-wrap{flex:0 0 240px;text-align:left;border-left:1px solid rgba(15,23,42,0.12);padding-left:14px;margin-left:12px}
     .score{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:900;color:var(--accent);font-size:1.15rem}
     /* medal colors for top 3 */
-    .tab-panel ol li:nth-child(1) .rank{color:#d4af37}
-    .tab-panel ol li:nth-child(2) .rank{color:#c0c0c0}
-    .tab-panel ol li:nth-child(3) .rank{color:#b87333}
+    .tab-panel ol li:nth-child(1) .rank{color:#f5c424}
+    .tab-panel ol li:nth-child(2) .rank{color:#9e9e9e}
+    .tab-panel ol li:nth-child(3) .rank{color:#9e642e}
+    .tab-panel ol li:nth-child(n+4) .rank{color:#374151}
 
     @media (max-width:600px){
       body{padding:14px}
