@@ -3,10 +3,12 @@ rcon:
   port: 25575
   password: "change_me"
 
+# 0で自動更新しない
 refresh_rate: 30
 
 page_title: "Score Rankings"
 
+# 0で降順
 scores:
   - key: kill
     title: "KILL RANKING"
