@@ -42,8 +42,9 @@
     .tab-panel h2{margin-top:12px;font-size:16px}
     ol{padding-left:18px;margin:8px 0}
     li{padding:8px 12px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(15,23,42,0.02), rgba(15,23,42,0.01));display:flex;justify-content:space-between;align-items:center}
-    .player{font-weight:600;color:#0f172a}
-    .score{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;color:var(--accent)}
+    .player{font-weight:600;color:#0f172a;margin-left:8px}
+    .score{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:800;color:var(--accent);font-size:1.05rem}
+    .rank{color:var(--muted);font-weight:700;width:28px;display:inline-block;text-align:right;margin-right:8px}
 
     @media (max-width:600px){
       body{padding:14px}
@@ -80,7 +81,7 @@
         <h2>{{ title }}</h2>
         <ol>
           {% for it in items %}
-            <li><span class="player">{{ it.player }}</span><span class="score">{{ it.value }}</span></li>
+            <li><span class="rank">{{ loop.index }}.</span><span class="player">{{ it.player }}</span><span class="score">{{ it.value }}</span></li>
           {% endfor %}
         </ol>
       </div>
@@ -123,18 +124,22 @@
         const ol = panel.querySelector('ol');
         if(!ol) continue;
         ol.innerHTML = '';
-        for(const it of items){
+        items.forEach((it, idx) => {
           const li = document.createElement('li');
+          const r = document.createElement('span');
+          r.className = 'rank';
+          r.textContent = (idx + 1) + '.';
           const p = document.createElement('span');
           p.className = 'player';
           p.textContent = it.player;
           const s = document.createElement('span');
           s.className = 'score';
           s.textContent = it.value;
+          li.appendChild(r);
           li.appendChild(p);
           li.appendChild(s);
           ol.appendChild(li);
-        }
+        });
       }
     }
 
