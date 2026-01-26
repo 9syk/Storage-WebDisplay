@@ -93,7 +93,7 @@
           {% for it in items %}
             <li>
               <div class="left"><span class="rank">{{ loop.index }}.</span><span class="player">{{ it.player }}</span></div>
-              <div class="score-wrap"><span class="score">{{ it.value }}</span></div>
+              <div class="score-wrap"><span class="score">{{ it.formatted_value }}</span></div>
             </li>
           {% endfor %}
         </ol>
@@ -151,7 +151,7 @@
           right.className = 'score-wrap';
           const s = document.createElement('span');
           s.className = 'score';
-          s.textContent = it.value;
+          s.textContent = it.formatted_value;
           right.appendChild(s);
           li.appendChild(left);
           li.appendChild(right);

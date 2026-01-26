@@ -66,6 +66,13 @@ def fetch_storage_for_score(score_key: str):
     return parse_storage_output(resp)
 
 
+def format_time(seconds):
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    secs = seconds % 60
+    return f"{hours}:{minutes:02d}:{secs:05.2f}"
+
+
 def get_rankings():
     out = {}
     scores = config.get("scores", [])
@@ -74,6 +81,7 @@ def get_rankings():
         title = score.get("title", key)
         items = []
         data = fetch_storage_for_score(key) or []
+        is_time = score.get("time", False)
         for entry in data:
             for player, val in entry.items():
                 try:
@@ -83,7 +91,12 @@ def get_rankings():
                         v = int(float(val))
                     except Exception:
                         v = 0
-                items.append({"player": player, "value": v})
+                if is_time:
+                    seconds = v / 20.0
+                    formatted_value = format_time(seconds)
+                else:
+                    formatted_value = str(v)
+                items.append({"player": player, "value": v, "formatted_value": formatted_value})
         reverse = score.get("sort", 0) == 0
         items.sort(key=lambda x: x["value"], reverse=reverse)
         out[title] = items
