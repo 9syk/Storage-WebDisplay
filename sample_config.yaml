@@ -6,6 +6,9 @@ rcon:
 # Auto-refresh interval in seconds. Set to 0 to disable automatic refresh.
 refresh_rate: 30
 
+# Page title shown at the top of the web UI
+page_title: "Score Rankings"
+
 scores:
   - key: kill
     title: "KILL RANKING"

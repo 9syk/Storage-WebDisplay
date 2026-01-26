@@ -108,7 +108,8 @@ def get_rankings():
 def index():
     rankings = get_rankings()
     refresh_rate = config.get("refresh_rate", 0)
-    return render_template("index.html", rankings=rankings, refresh_rate=refresh_rate)
+    page_title = config.get("page_title", "Score Rankings")
+    return render_template("index.html", rankings=rankings, refresh_rate=refresh_rate, page_title=page_title)
 
 
 @app.route("/refresh", methods=["POST"])
@@ -116,7 +117,8 @@ def refresh():
     # Trigger fresh fetch via get_rankings and render same template.
     rankings = get_rankings()
     refresh_rate = config.get("refresh_rate", 0)
-    return render_template("index.html", rankings=rankings, refresh_rate=refresh_rate)
+    page_title = config.get("page_title", "Score Rankings")
+    return render_template("index.html", rankings=rankings, refresh_rate=refresh_rate, page_title=page_title)
 
 
 @app.route('/api/refresh')
