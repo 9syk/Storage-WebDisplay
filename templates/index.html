@@ -24,7 +24,7 @@
   <div id="rankings">
   <div class="tabs">
     {% for title, items in rankings.items() %}
-      <button class="tab-btn" data-target="tab-{{ loop.index0 }}">{{ title }}</button>
+      <button class="tab-btn{% if loop.first %} active{% endif %}" data-target="tab-{{ loop.index0 }}">{{ title }}</button>
     {% endfor %}
   </div>
 
@@ -68,23 +68,20 @@
       el.textContent = `次の自動更新まで: ${remaining}s`;
     }
     async function renderRankings(obj){
-      // Update each tab-panel content by matching titles order
-      const panels = document.querySelectorAll('.tab-panel');
-      let i = 0;
+      // Update each tab-panel content by matching panel's data-title to ranking title
+      const panels = Array.from(document.querySelectorAll('.tab-panel'));
       for(const title in obj){
         const items = obj[title];
-        const panel = panels[i];
-        if(!panel) { i++; continue; }
-        // update the list inside panel
+        const panel = panels.find(p => p.dataset.title === title);
+        if(!panel) continue;
         const ol = panel.querySelector('ol');
-        if(!ol) { i++; continue; }
+        if(!ol) continue;
         ol.innerHTML = '';
         for(const it of items){
           const li = document.createElement('li');
           li.textContent = `${it.player}: ${it.value}`;
           ol.appendChild(li);
         }
-        i++;
       }
     }
 
