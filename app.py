@@ -15,10 +15,10 @@ except Exception:
 logging.basicConfig(level=logging.INFO)
 
 BASE = Path(__file__).parent
-CONFIG_PATH = BASE / "config.yaml"
+CONFIG_PATH = BASE / "config.yml"
 
 if not CONFIG_PATH.exists():
-    raise SystemExit("config.yaml not found. Please create it from README example.")
+    raise SystemExit("config.yml not found. Please create it from README example.")
 
 with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
@@ -84,7 +84,8 @@ def get_rankings():
                     except Exception:
                         v = 0
                 items.append({"player": player, "value": v})
-        items.sort(key=lambda x: x["value"], reverse=True)
+        reverse = score.get("sort", 0) == 0
+        items.sort(key=lambda x: x["value"], reverse=reverse)
         out[title] = items
     return out
 

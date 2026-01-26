@@ -9,7 +9,7 @@ syk9libで保存したstorageの情報をrconで取得し、webに表示しま�
 
 1. Minecraftサーバー側でrconの設定をする
 
-2. `sample_config.yaml`を参考に`config.yaml`を書く
+2. `sample_config.yml`を参考に`config.yml`を書く
 
 3. `docker compose up --build`で起動
 

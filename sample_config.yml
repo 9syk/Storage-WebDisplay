@@ -8,8 +8,11 @@ refresh_rate: 30
 
 page_title: "Score Rankings"
 
+# 0:降順, 1:昇順
 scores:
   - key: kill
     title: "KILL RANKING"
+    sort: 0
   - key: damage
     title: "DAMAGE RANKING"
+    sort: 1
