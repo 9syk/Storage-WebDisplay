@@ -47,8 +47,13 @@ def parse_storage_output(text: str):
         return []
 
 
-def fetch_storage_for_score(storage: str, score_key: str):
-    """Call mcrcon to fetch the storage for a given storage name and score key."""
+def fetch_storage_for_score(score_key: str):
+    """Call mcrcon to fetch the storage array for a given score key.
+
+    Uses the fixed namespace `syk9lib:` and the path
+    `scoretostorage.result.<score>` separated by a space as requested:
+    `data get storage syk9lib: scoretostorage.result.<score>`
+    """
     if MCRcon is None:
         logging.error("mcrcon library not available. Install via requirements.txt")
         return []
@@ -56,40 +61,37 @@ def fetch_storage_for_score(storage: str, score_key: str):
     host = rconf.get("host", "localhost")
     port = int(rconf.get("port", 25575))
     password = rconf.get("password", "")
-    cmd = f"data get storage {storage} syk9lib:scoretostorage.result.{score_key}"
+    cmd = f"data get storage syk9lib: scoretostorage.result.{score_key}"
     try:
         with MCRcon(host, password, port) as m:
-            # compatibility: some mcrcon versions use .command, some .sendCommand
             try:
                 resp = m.command(cmd)
             except AttributeError:
                 resp = m.sendCommand(cmd)
     except Exception:
-        logging.exception("Failed mcrcon for %s %s", storage, score_key)
+        logging.exception("Failed mcrcon for score %s", score_key)
         return []
     return parse_storage_output(resp)
 
 
 def get_rankings():
     out = {}
-    storages = config.get("storages", [])
     scores = config.get("scores", [])
     for score in scores:
         key = score["key"]
         title = score.get("title", key)
         items = []
-        for st in storages:
-            data = fetch_storage_for_score(st, key) or []
-            for entry in data:
-                for player, val in entry.items():
+        data = fetch_storage_for_score(key) or []
+        for entry in data:
+            for player, val in entry.items():
+                try:
+                    v = int(val)
+                except Exception:
                     try:
-                        v = int(val)
+                        v = int(float(val))
                     except Exception:
-                        try:
-                            v = int(float(val))
-                        except Exception:
-                            v = 0
-                    items.append({"player": player, "value": v, "storage": st})
+                        v = 0
+                items.append({"player": player, "value": v})
         items.sort(key=lambda x: x["value"], reverse=True)
         out[title] = items
     return out

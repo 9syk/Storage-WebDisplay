@@ -2,11 +2,6 @@ rcon:
   host: "127.0.0.1"
   port: 25575
   password: "change_me"
-
-storages:
-  - storage1
-  - storage2
-
 scores:
   - key: kill
     title: "～KILL RANKING～"
