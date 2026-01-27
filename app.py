@@ -7,24 +7,35 @@ from pathlib import Path
 from flask import Flask, render_template, jsonify
 from mcrcon import MCRcon
 
-
 logging.basicConfig(level=logging.INFO)
-
 
 BASE = Path(__file__).parent
 CONFIG_PATH = BASE / "config.yml"
-
 
 if not CONFIG_PATH.exists():
     raise SystemExit("config.yml not found. Please create it from README example.")
 with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
 
-
 app = Flask(__name__)
 DATA_CACHE = {}
+
 RE_JSON_CONTENT = re.compile(r"(\[.*\]|\{.*\})", re.S)
 RE_UNQUOTED_KEYS = re.compile(r'([{,]\s*)([A-Za-z0-9_\-+]+)\s*:')
+
+
+def get_config_int(key, default, min_val=None):
+    raw = config.get(key, default)
+    try:
+        val = int(raw)
+    except (ValueError, TypeError):
+        logging.warning(f"Invalid config value for '{key}': {raw}. Using default: {default}")
+        val = default
+    
+    if min_val is not None:
+        return max(min_val, val)
+    return val
+
 
 def parse_storage_output(text: str):
     if not text:
@@ -79,8 +90,11 @@ def get_rankings():
     host = rconf.get("host", "localhost")
     port = int(rconf.get("port", 25575))
     password = rconf.get("password", "")
-    raw_timeout = int(rconf.get("timeout", 1))
-    timeout_val = max(1, raw_timeout)
+    raw_timeout = rconf.get("timeout", 1)
+    try:
+        timeout_val = max(1, int(raw_timeout))
+    except (ValueError, TypeError):
+        timeout_val = 1
     mcr = None
     if is_server_running(host, port, timeout=timeout_val):
         try:
@@ -129,19 +143,15 @@ def get_rankings():
 @app.route("/")
 def index():
     rankings = get_rankings()
-    refresh_rate = config.get("refresh_rate", 0)
+    refresh_rate = get_config_int("refresh_rate", 0, min_val=0)
     page_title = config.get("page_title", "Score Rankings")
     return render_template("index.html", rankings=rankings, refresh_rate=refresh_rate, page_title=page_title)
 
 
 @app.route("/refresh", methods=["POST"])
 def refresh():
-    rankings = get_rankings()
-    raw_rate = config.get("refresh_rate", 0)
-    try:
-        refresh_rate = max(0, int(raw_rate))
-    except ValueError:
-        refresh_rate = 0
+    rankings = get_rankings()    
+    refresh_rate = get_config_int("refresh_rate", 0, min_val=0)
     page_title = config.get("page_title", "Score Rankings")
     return render_template("index.html", rankings=rankings, refresh_rate=refresh_rate, page_title=page_title)
 
