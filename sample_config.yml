@@ -2,6 +2,7 @@ rcon:
   host: "127.0.0.1"
   port: 25575
   password: "change_me"
+  timeout: 3
 
 # 0で自動更新しない
 refresh_rate: 30
