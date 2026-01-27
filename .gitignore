@@ -1,4 +1,1 @@
-config.yaml
-__pycache__/
-*.py[cod]
-.env
+config.yml
