@@ -137,7 +137,8 @@ def index():
 @app.route("/refresh", methods=["POST"])
 def refresh():
     rankings = get_rankings()
-    raw_rate = config.get("refresh_rate", 0)    try:
+    raw_rate = config.get("refresh_rate", 0)
+    try:
         refresh_rate = max(0, int(raw_rate))
     except ValueError:
         refresh_rate = 0
