@@ -14,7 +14,6 @@
       <div class="title">
         <h1>{{ page_title }}</h1>
       </div>
-
       <div class="right">
         <div class="controls">
           <span id="status"></span>
@@ -29,9 +28,8 @@
     <div class="card" id="rankings">
       <div class="tabs">
         {% for title, items in rankings.items() %}
-          <button
-            class="tab-btn{% if loop.first %} active{% endif %}"
-            data-target="tab-{{ loop.index0 }}">
+          <button class="tab-btn{% if loop.first %} active{% endif %}"
+                  data-target="tab-{{ loop.index0 }}">
             {{ title }}
           </button>
         {% endfor %}
@@ -40,11 +38,9 @@
 
     <div class="tab-contents">
       {% for title, items in rankings.items() %}
-        <div
-          id="tab-{{ loop.index0 }}"
-          class="tab-panel{% if loop.first %} active{% endif %}"
-          data-title="{{ title }}">
-
+        <div id="tab-{{ loop.index0 }}"
+             class="tab-panel{% if loop.first %} active{% endif %}"
+             data-title="{{ title }}">
           <h2>{{ title }}</h2>
           <ol>
             {% for it in items %}
