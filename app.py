@@ -3,14 +3,8 @@ import json
 import yaml
 import logging
 from pathlib import Path
-
-from flask import Flask, render_template
-from flask import jsonify
-
-try:
-    from mcrcon import MCRcon
-except Exception:
-    MCRcon = None
+from flask import Flask, render_template, jsonify
+from mcrcon import MCRcon
 
 logging.basicConfig(level=logging.INFO)
 
@@ -42,9 +36,6 @@ def parse_storage_output(text: str):
 
 
 def fetch_storage_for_score(score_key: str):
-    if MCRcon is None:
-        logging.error("mcrcon library not available. Install via requirements.txt")
-        return []
     rconf = config.get("rcon", {})
     host = rconf.get("host", "localhost")
     port = int(rconf.get("port", 25575))
