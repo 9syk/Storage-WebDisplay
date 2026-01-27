@@ -2,6 +2,7 @@ import re
 import json
 import yaml
 import logging
+import socket
 from pathlib import Path
 from flask import Flask, render_template, jsonify
 from mcrcon import MCRcon
@@ -21,6 +22,13 @@ app = Flask(__name__)
 DATA_CACHE = {}
 RE_JSON_CONTENT = re.compile(r"(\[.*\]|\{.*\})", re.S)
 RE_UNQUOTED_KEYS = re.compile(r'([{,]\s*)([A-Za-z0-9_\-+]+)\s*:')
+
+def is_server_running(host, port):
+    try:
+        with socket.create_connection((host, port), timeout=1):
+            return True
+    except (socket.timeout, socket.error):
+        return False
 
 def parse_storage_output(text: str):
     if not text:
@@ -68,11 +76,15 @@ def get_rankings():
     port = int(rconf.get("port", 25575))
     password = rconf.get("password", "")
     mcr = None
-    try:
-        mcr = MCRcon(host, password, port, timeout=1)
-        mcr.connect()
-    except Exception as e:
-        logging.warning(f"Initial RCON connection failed: {e}. Switching to offline mode.")
+    if is_server_running(host, port):
+        try:
+            mcr = MCRcon(host, password, port, timeout=1)
+            mcr.connect()
+        except Exception as e:
+            logging.warning(f"RCON connection failed despite open port: {e}")
+            mcr = None
+    else:
+        logging.info("Server appears to be down (socket check failed). Using cache.")
         mcr = None
     try:
         for score in scores:
@@ -101,7 +113,10 @@ def get_rankings():
             out[title] = items
     finally:
         if mcr:
-            mcr.disconnect()
+            try:
+                mcr.disconnect()
+            except Exception:
+                pass
     return out
 
 
