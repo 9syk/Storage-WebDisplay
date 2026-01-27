@@ -18,40 +18,42 @@ with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
 
 app = Flask(__name__)
-
+DATA_CACHE = {}
+RE_JSON_CONTENT = re.compile(r"(\[.*\]|\{.*\})", re.S)
+RE_UNQUOTED_KEYS = re.compile(r'([{,]\s*)([A-Za-z0-9_\-+]+)\s*:')
 
 def parse_storage_output(text: str):
     if not text:
         return []
-    m = re.search(r"(\[.*\])", text, re.S)
+    m = RE_JSON_CONTENT.search(text)
     s = m.group(1) if m else text
     s = s.strip()
     s = s.replace("'", '"')
-    s = re.sub(r'([{,]\s*)([A-Za-z0-9_\-+]+)\s*:', r'\1"\2":', s)
+    s = RE_UNQUOTED_KEYS.sub(r'\1"\2":', s)
     try:
         return json.loads(s)
     except Exception:
-        logging.exception("Failed to parse storage text: %s", s)
+        logging.exception("Failed to parse storage text. Raw data: %s", text)
         return []
 
 
 def fetch_storage_for_score(score_key: str):
+    global DATA_CACHE
     rconf = config.get("rcon", {})
     host = rconf.get("host", "localhost")
     port = int(rconf.get("port", 25575))
     password = rconf.get("password", "")
     cmd = f"data get storage syk9lib: scoretostorage.result.{score_key}"
     try:
-        try:
-            with MCRcon(host, password, port) as m:
+        with MCRcon(host, password, port, timeout=1) as m:
                 resp = m.command(cmd)
-        except SystemExit:
-            logging.error("mcrcon raised SystemExit (likely connection failure) for %s:%s", host, port)
-            return []
-    except Exception:
-        logging.exception("Failed mcrcon for score %s", score_key)
-        return []
-    return parse_storage_output(resp)
+                data = parse_storage_output(resp)
+                if data:
+                    DATA_CACHE[score_key] = data
+                return data
+    except Exception as e:
+        logging.warning(f"RCON failed for {score_key}: {e}. Using cached data.")
+        return DATA_CACHE.get(score_key, [])
 
 
 def format_time(seconds):
