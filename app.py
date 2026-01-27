@@ -83,7 +83,7 @@ def get_rankings():
                     seconds = v / 20.0
                     formatted_value = format_time(seconds)
                 else:
-                    formatted_value = str(v)
+                    formatted_value = f"{v:,}"
                 items.append({"player": player, "value": v, "formatted_value": formatted_value})
         reverse = score.get("sort", 0) == 0
         items.sort(key=lambda x: x["value"], reverse=reverse)
