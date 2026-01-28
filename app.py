@@ -13,7 +13,7 @@ BASE = Path(__file__).parent
 CONFIG_PATH = BASE / "config.yml"
 
 if not CONFIG_PATH.exists():
-    raise SystemExit("config.yml not found. Please create it from README example.")
+    raise SystemExit("config.yml not found. Please create it from sample_config.yml.")
 with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
 
